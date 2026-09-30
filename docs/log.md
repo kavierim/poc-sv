@@ -4,6 +4,7 @@ Internal chronology for maintainers. New readers should use the [README](../READ
 
 ## 2026-09-30
 
+- README: rewrite for public search visibility (keyword lead, semantic H2s, Verilator / Yosys ASIC / `uv` quickstart snippets); badges and `arith_TRNG` SKIP kept.
 - README: add GitHub Actions status badges for Verilator and ASIC synth (`kavierim/poc-sv`).
 - README: document both GitHub CI workflows (Verilator + ASIC synth smoke), `arith_TRNG` SKIP exception, and that the smoke is not Liberty/SRAM signoff (memories may become flops).
 - ASIC synth smoke: `tools/synth_asic.py` (Yosys `read_slang` + generic `synth -top`), CI `.github/workflows/asic-synth.yml` (oss-cad-suite `20260930` linux-x64). Playbook [`asic-synth.md`](playbooks/asic-synth.md). AXI bus typedefs hoisted to package-scope `*_types` classes; `poc_utils`/`poc_strings`/`ocram` sim-only paths guarded with `` `ifndef SYNTHESIS ``. `axi4_DeMux` read path inlined (second `axi4stream_Mux` tripped a Yosys/slang assert). `arith_TRNG` documented SKIP (comb-loop TRNG). Synth **65 pass / 0 fail / 1 skip**; Verilator **28/28**.
