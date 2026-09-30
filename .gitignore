@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Kari Vierimaa, Kempele, Finland
+#
+# Ancillary repository file (not Covered Source). RTL is under Apache-2.0; see NOTICE.
+
+obj_dir/
+obj_dir_log_*.txt
+*.vcd
+*.fst
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.verilator_cache/

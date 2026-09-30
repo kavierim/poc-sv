@@ -1,0 +1,24 @@
+Modified: 2026-09-27, Kari Vierimaa, Kempele, Finland.
+Description: Translated from VHDL to SystemVerilog.
+
+This repository is a modification of Covered Source from the PoC-Library
+(VHDL/PoC), made under the Apache License, Version 2.0. The modification is a
+translation from VHDL to SystemVerilog. Module names, generic names, port
+names, and behaviour are kept where the language allows.
+
+Upstream:
+  https://github.com/VHDL/PoC
+  tag v3.0.0
+  commit b9040273
+
+Author of this modification:
+  Kari Vierimaa, Kempele, Finland
+
+Source Location:
+  https://github.com/kavierim/poc-sv
+
+This is not an official PoC-Library or OSVG release. The Open Source VHDL
+Group (OSVG) has not endorsed this translation.
+
+The licence text in LICENSES/Apache-2.0.txt is the unmodified Apache License,
+Version 2.0.

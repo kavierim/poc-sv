@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2026 Kari Vierimaa, Kempele, Finland
+#
+# Ancillary repository file (not Covered Source). RTL is under Apache-2.0; see NOTICE.
+
+name: verilator
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+
+      - name: Run regression
+        run: JOBS=1 SIM_TIMEOUT=180 verilator/run_all.sh
