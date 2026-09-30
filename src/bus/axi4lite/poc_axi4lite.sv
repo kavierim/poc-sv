@@ -49,7 +49,8 @@ package poc_axi4lite;
 
   // Dynamic register description tables use T_AXI4_Register desc[] in APIs.
 
-  class axi4lite_sized #(
+  // Package-scope type bundle (structs only) for synthesizable port types.
+  class axi4lite_types #(
     parameter int ADDR_W = 32,
     parameter int DATA_W = 32
   );
@@ -86,6 +87,17 @@ package poc_axi4lite;
       bus_m2s_t M2S;
       bus_s2m_t S2M;
     } bus_t;
+  endclass
+
+  class axi4lite_sized #(
+    parameter int ADDR_W = 32,
+    parameter int DATA_W = 32
+  );
+    localparam int WSTRB_W = div_ceil(DATA_W, 8);
+
+    typedef axi4lite_types#(ADDR_W, DATA_W)::bus_m2s_t bus_m2s_t;
+    typedef axi4lite_types#(ADDR_W, DATA_W)::bus_s2m_t bus_s2m_t;
+    typedef axi4lite_types#(ADDR_W, DATA_W)::bus_t     bus_t;
 
     typedef bus_m2s_t bus_m2s_vector_t[];
     typedef bus_s2m_t bus_s2m_vector_t[];
@@ -374,8 +386,10 @@ package poc_axi4lite;
       end
     if (DEBUG)
       $warning("PoC.axi4lite: get_Index('%s') no match", name);
+`ifndef SYNTHESIS
     else
       $fatal(1, "PoC.axi4lite: get_Index('%s') no match", name);
+`endif
     return 0;
   endfunction
 
@@ -412,8 +426,10 @@ package poc_axi4lite;
         return register_vector[i].Address;
     if (DEBUG)
       $warning("PoC.axi4lite: get_Address('%s') no match", name);
+`ifndef SYNTHESIS
     else
       $fatal(1, "PoC.axi4lite: get_Address('%s') no match", name);
+`endif
     return {ADDRESS_BITS{1'b1}};
   endfunction
 
@@ -426,8 +442,10 @@ package poc_axi4lite;
         return register_vector[i].Name;
     if (DEBUG)
       $warning("PoC.axi4lite: get_Name no match");
+`ifndef SYNTHESIS
     else
       $fatal(1, "PoC.axi4lite: get_Name no match");
+`endif
     return resize("", NAME_LENGTH);
   endfunction
 
@@ -580,9 +598,9 @@ package poc_axi4lite;
     io_register_description_vector(v);
   endfunction
 
-  typedef axi4lite_sized#(ADDRESS_BITS, DATA_BITS)::bus_m2s_t T_AXI4Lite_Bus_M2S;
-  typedef axi4lite_sized#(ADDRESS_BITS, DATA_BITS)::bus_s2m_t T_AXI4Lite_Bus_S2M;
-  typedef axi4lite_sized#(ADDRESS_BITS, DATA_BITS)::bus_t     T_axi4lite_Bus_Alias;
+  typedef axi4lite_types#(ADDRESS_BITS, DATA_BITS)::bus_m2s_t T_AXI4Lite_Bus_M2S;
+  typedef axi4lite_types#(ADDRESS_BITS, DATA_BITS)::bus_s2m_t T_AXI4Lite_Bus_S2M;
+  typedef axi4lite_types#(ADDRESS_BITS, DATA_BITS)::bus_t     T_axi4lite_Bus_Alias;
 
   function automatic T_AXI4Lite_Bus_M2S initialize_axi4lite_bus_m2s(input logic value = 1'b0);
     return axi4lite_sized#(ADDRESS_BITS, DATA_BITS)::initialize_bus_m2s(value);

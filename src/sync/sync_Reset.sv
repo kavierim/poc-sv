@@ -26,7 +26,7 @@ module sync_Reset #(
   assign Data_async = Input;
 
   always @(posedge Clock or posedge Data_async) begin
-    if (Data_async === 1'b1) begin
+    if (Data_async) begin
       Data_meta <= 1'b1;
       Data_sync <= '{default: 1'b1};
     end else begin

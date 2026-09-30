@@ -20,10 +20,10 @@ module axi4_AXI4Lite_Converter #(
   parameter int LITE_ADDR_W = ADDR_W,
   parameter int LITE_DATA_W = DATA_W,
   parameter int RESPONSE_FIFO_DEPTH = 16,
-  parameter type full_m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type full_s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t,
-  parameter type lite_m2s_t = axi4lite_sized#(LITE_ADDR_W, LITE_DATA_W)::bus_m2s_t,
-  parameter type lite_s2m_t = axi4lite_sized#(LITE_ADDR_W, LITE_DATA_W)::bus_s2m_t
+  parameter type full_m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type full_s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t,
+  parameter type lite_m2s_t = axi4lite_types#(LITE_ADDR_W, LITE_DATA_W)::bus_m2s_t,
+  parameter type lite_s2m_t = axi4lite_types#(LITE_ADDR_W, LITE_DATA_W)::bus_s2m_t
 ) (
   input  logic Clock,
   input  logic Reset,

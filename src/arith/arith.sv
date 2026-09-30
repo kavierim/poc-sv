@@ -208,7 +208,9 @@ package poc_arith;
       167: taps = '{161, 0, 0, 0, 0};
       168: taps = '{166, 153, 151, 0, 0};
       default: begin
+`ifndef SYNTHESIS
         $fatal(1, "arith_prbs_lfsr: width %0d not yet supported (3..168)", width);
+`endif
         taps = '{default: 0};
       end
     endcase

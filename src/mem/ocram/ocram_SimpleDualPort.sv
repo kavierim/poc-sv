@@ -41,8 +41,10 @@ module ocram_SimpleDualPort #(
     });
     for (int i = 0; i < WORDS; i++)
       ram[i] = '0;
+`ifndef SYNTHESIS
     if (FILENAME != "")
-      void'($readmemh(FILENAME, ram));
+      $readmemh(FILENAME, ram);
+`endif
   end
 
   always_ff @(posedge Write_Clock) begin

@@ -182,9 +182,13 @@ package poc_utils;
   endfunction
 
   function automatic real ite_r(input bit cond, input real v1, input real v2);
+`ifndef SYNTHESIS
     if (cond)
       return v1;
     return v2;
+`else
+    return 0.0;
+`endif
   endfunction
 
   function automatic logic ite_sl(input bit cond, input logic v1, input logic v2);
@@ -194,9 +198,13 @@ package poc_utils;
   endfunction
 
   function automatic string ite_str(input bit cond, input string v1, input string v2);
+`ifndef SYNTHESIS
     if (cond)
       return v1;
     return v2;
+`else
+    return "";
+`endif
   endfunction
 
   function automatic byte ite_ch(input bit cond, input byte v1, input byte v2);
@@ -545,6 +553,7 @@ package poc_utils;
     input int              max_val,
     input rounding_style_t rounding_style = ROUND_TO_NEAREST
   );
+`ifndef SYNTHESIS
     real result;
     if (max_val < min_val)
       return 0;
@@ -555,6 +564,11 @@ package poc_utils;
       ROUND_DOWN: return int'($floor(result));
       default: return 0;
     endcase
+`else
+    if (max_val < min_val)
+      return 0;
+    return value;
+`endif
   endfunction
 
   function automatic bit_order_t bit_order_not(input bit_order_t left);

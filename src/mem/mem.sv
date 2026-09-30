@@ -11,8 +11,10 @@
 
 package poc_mem;
 
+`ifndef SYNTHESIS
   import poc_strings::str_length;
   import poc_strings::str_to_lower;
+`endif
 
   typedef enum int unsigned {
     MEM_FILEFORMAT_INTEL_HEX,
@@ -34,6 +36,7 @@ package poc_mem;
     RAM_TYPE_ULTRA_RAM
   } ram_type_t;
 
+`ifndef SYNTHESIS
   function automatic string mem_FileExtension(string filename);
     for (int i = filename.len() - 1; i >= 0; i--) begin
       if (filename[i] == ".")
@@ -53,6 +56,8 @@ package poc_mem;
       return "block";
     return "";
   endfunction
+
+`endif
 
   class ram_type_split;
     static function automatic void get_ram_type_vec(input int a, input int d, output int depth[2]);
@@ -140,35 +145,36 @@ package poc_mem;
     endcase
   endfunction
 
+`ifndef SYNTHESIS
   class ram_init #(parameter int WORDS = 1, parameter int DATA_BITS = 8);
     static function automatic void init_words(
       ref logic [DATA_BITS-1:0] mem[0:WORDS-1],
       input string              file_path
     );
-      if (str_length(file_path) == 0) begin
-        for (int i = 0; i < WORDS; i++)
-          mem[i] = '0;
-        return;
-      end
-
       for (int i = 0; i < WORDS; i++)
         mem[i] = '0;
+      if (str_length(file_path) == 0)
+        return;
 
       if (mem_FileExtension(file_path) == "mem") begin
         int    fd;
         string header_line;
         fd = $fopen(file_path, "r");
-        if (fd == 0)
+        if (fd == 0) begin
           $fatal(1, "poc_mem: cannot open memory file '%s'", file_path);
+          return;
+        end
         if ($fgets(header_line, fd) == 0)
           $warning("poc_mem: Xilinx .mem file '%s' is empty", file_path);
         else if (header_line.len() == 0)
           $warning("poc_mem: Xilinx .mem header line empty in '%s'", file_path);
-        void'($fclose(fd));
+        $fclose(fd);
       end
 
-      void'($readmemh(file_path, mem));
+      $readmemh(file_path, mem);
     endfunction
   endclass
+`endif
+
 
 endpackage

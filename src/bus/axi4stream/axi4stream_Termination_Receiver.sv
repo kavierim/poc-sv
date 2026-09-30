@@ -20,8 +20,8 @@ module axi4stream_Termination_Receiver #(
   parameter int   ID_BITS   = 1,
   parameter int   KEEP_BITS = 0,
   parameter int   REV_USER_BITS = 1,
-  parameter type m2s_t = axi4stream_sized#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::m2s_t,
-  parameter type s2m_t = axi4stream_sized#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS, REV_USER_BITS)::s2m_t
+  parameter type m2s_t = axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::m2s_t,
+  parameter type s2m_t = axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS, REV_USER_BITS)::s2m_t
 ) (
   input  m2s_t In_M2S,
   output s2m_t In_S2M

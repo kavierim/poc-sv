@@ -19,8 +19,8 @@ module axi4stream_Termination_Transmitter #(
   parameter int   DEST_BITS = 1,
   parameter int   ID_BITS   = 1,
   parameter int   KEEP_BITS = 0,
-  parameter type m2s_t = axi4stream_sized#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::m2s_t,
-  parameter type s2m_t = axi4stream_sized#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::s2m_t
+  parameter type m2s_t = axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::m2s_t,
+  parameter type s2m_t = axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::s2m_t
 ) (
   output m2s_t Out_M2S,
   input  s2m_t Out_S2M

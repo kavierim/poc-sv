@@ -9,6 +9,7 @@
 
 - Sources under `src/`. Follow [`CONVENTIONS.md`](CONVENTIONS.md).
 - Verify with `sim/**/*_tb.sv` and [`verilator/run_all.sh`](verilator/run_all.sh).
+- ASIC smoke: [`tools/synth_asic.py`](tools/synth_asic.py) after sourcing oss-cad-suite — see [`docs/playbooks/asic-synth.md`](docs/playbooks/asic-synth.md). Synthesis-oriented RTL fixes must not break `verilator/run_all.sh`.
 - Root integration manifests (`poc.f`, `Bender.yml`, `poc.core`) and [`tools/gen_packaging.py`](tools/gen_packaging.py): after changing `verilator/files/*.f`, regenerate those manifests with `python tools/gen_packaging.py` (or `uv run` if a project env is added later).
 
 ## Maintaining docs

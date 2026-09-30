@@ -22,8 +22,10 @@ module arith_PRNG #(
   import poc_arith::*;
 
   initial begin
+`ifndef SYNTHESIS
     if (BITS < 3 || BITS > 168)
       $fatal(1, "arith_PRNG: width %0d not supported (3..168)", BITS);
+`endif
   end
 
   logic [BITS-1:0]  val_r;

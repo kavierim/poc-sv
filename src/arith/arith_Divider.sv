@@ -89,9 +89,9 @@ module arith_Divider #(
     t_divisor dn;
     if (Reset) begin
       for (int i = 0; i <= DEPTH; i++) begin
-        AR[i] <= 'x;
+        AR[i] = '0;
       end
-      ZR <= 1'bx;
+      ZR = 1'b0;
     end else begin
       an = {{RES_W - DIVIDEND_BITS{1'b0}}, Dividend};
       dn = Divisor;
@@ -103,9 +103,9 @@ module arith_Divider #(
       if (PIPELINED || (!Start && exec)) begin
         AR[DEPTH] = an;
         if (dn == '0)
-          ZR <= 1'b1;
+          ZR = 1'b1;
         else
-          ZR <= 1'b0;
+          ZR = 1'b0;
       end
       /* verilator lint_on BLKSEQ */
     end

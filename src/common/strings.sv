@@ -42,7 +42,9 @@ package poc_strings;
       return IPSTYLE_HARD;
     if (str_imatch(str, "SOFT"))
       return IPSTYLE_SOFT;
+`ifndef SYNTHESIS
     $fatal(1, "Unknown IPStyle: '%s'", str);
+`endif
     return IPSTYLE_UNKNOWN;
   endfunction
 
@@ -98,6 +100,72 @@ package poc_strings;
     return value ? "1" : "0";
   endfunction
 
+  // --- synthesis stubs / simulation string helpers ---
+`ifdef SYNTHESIS
+  function automatic string raw_format_bool_str(input bit value);
+    return value ? "TRUE" : "FALSE";
+  endfunction
+  function automatic string raw_format_nat_dec(input int value);
+    return "";
+  endfunction
+  function automatic string to_string_bool(input bit value);
+    return raw_format_bool_str(value);
+  endfunction
+  function automatic string to_string_int(input int value, input int base = 10);
+    return "";
+  endfunction
+  function automatic int str_length(string str);
+    return 0;
+  endfunction
+  function automatic bit str_equal(string str1, string str2);
+    return 1'b0;
+  endfunction
+  function automatic string str_to_lower(string str);
+    return "";
+  endfunction
+  function automatic string str_to_upper(string str);
+    return "";
+  endfunction
+  function automatic bit str_match(string str1, string str2);
+    return 1'b0;
+  endfunction
+  function automatic bit str_imatch(string str1, string str2);
+    return 1'b0;
+  endfunction
+  function automatic int str_pos(string str, input byte chr, input int start = 0);
+    return -1;
+  endfunction
+  function automatic bit str_find(string str, input byte chr);
+    return 1'b0;
+  endfunction
+  function automatic string str_trim(string str);
+    return "";
+  endfunction
+  function automatic string normalize_path(string path);
+    return "";
+  endfunction
+  function automatic string resize(string str, input int size, input byte fill_char = C_POC_NUL);
+    return "";
+  endfunction
+  class slv_fmt #(parameter int W = 32);
+    static function automatic string raw_format_slv_bin(input logic [W-1:0] slv);
+      return "";
+    endfunction
+    static function automatic string raw_format_slv_hex(input logic [W-1:0] slv);
+      return "";
+    endfunction
+  endclass
+  class slv_to_str #(parameter int W = 32);
+    static function automatic string to_string(
+      input logic [W-1:0] slv,
+      input byte          format = "h",
+      input int           length = 0,
+      input byte          fill   = "0"
+    );
+      return "";
+    endfunction
+  endclass
+`else
   function automatic string raw_format_bool_str(input bit value);
     return value ? "TRUE" : "FALSE";
   endfunction
@@ -107,7 +175,7 @@ package poc_strings;
       string result;
       result = "";
       for (int j = W - 1; j >= 0; j--)
-        result = {to_char_sl(slv[j]), result};
+        result = {string'(to_char_sl(slv[j])), result};
       return result;
     endfunction
 
@@ -125,7 +193,7 @@ package poc_strings;
           bit_idx = lo + k;
           digit[k] = (bit_idx < W) ? slv[bit_idx] : 1'b0;
         end
-        result = {to_hex_char(int'(digit)), result};
+        result = {string'(to_hex_char(int'(digit))), result};
       end
       return result;
     endfunction
@@ -142,7 +210,9 @@ package poc_strings;
   function automatic string to_string_int(input int value, input int base = 10);
     if (base == 10)
       return $sformatf("%0d", value);
+`ifndef SYNTHESIS
     $fatal(1, "to_string integer base %0d not fully implemented", base);
+`endif
     return "";
   endfunction
 
@@ -165,13 +235,15 @@ package poc_strings;
         result = slv_fmt#(W)::raw_format_slv_hex(slv);
         len    = div_ceil(W, 4);
       end else begin
+`ifndef SYNTHESIS
         $fatal(1, "Unknown format character: %c", format);
+`endif
       end
       if (length > 0 && length > len) begin
         string pad;
         pad = "";
         for (int i = 0; i < length - len; i++)
-          pad = {pad, fill};
+          pad = {pad, string'(fill)};
         return {pad, result};
       end
       return result;
@@ -233,9 +305,9 @@ package poc_strings;
     n      = imin(size, str.len());
     for (int i = 0; i < size; i++) begin
       if (i < n)
-        result = {result, str[i]};
+        result = {result, string'(str[i])};
       else
-        result = {result, fill_char};
+        result = {result, string'(fill_char)};
     end
     return result;
   endfunction
@@ -328,5 +400,7 @@ package poc_strings;
   function automatic string normalize_path(string path);
     return poc_config::normalize_path(path);
   endfunction
+
+`endif
 
 endpackage

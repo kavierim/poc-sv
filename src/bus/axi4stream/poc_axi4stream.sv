@@ -14,7 +14,8 @@ package poc_axi4stream;
   import poc_utils::div_ceil;
   import poc_utils::downto_width;
 
-  class axi4stream_sized #(
+  // Package-scope type bundle (structs only) for synthesizable port types.
+  class axi4stream_types #(
     parameter int DATA_BITS     = 32,
     parameter int USER_BITS     = 1,
     parameter int DEST_BITS     = 1,
@@ -24,7 +25,6 @@ package poc_axi4stream;
   );
     localparam int KEEP_W     = (KEEP_BITS > 0) ? KEEP_BITS : div_ceil(DATA_BITS, 8);
     localparam int REV_USER_W = downto_width(REV_USER_BITS);
-    localparam int TOTAL_SER_W = DATA_BITS + 1 + USER_BITS + DEST_BITS + ID_BITS + KEEP_W;
 
     typedef struct packed {
       logic        Valid;
@@ -40,6 +40,22 @@ package poc_axi4stream;
       logic        Ready;
       logic [REV_USER_W-1:0] User;
     } s2m_t;
+  endclass
+
+  class axi4stream_sized #(
+    parameter int DATA_BITS     = 32,
+    parameter int USER_BITS     = 1,
+    parameter int DEST_BITS     = 1,
+    parameter int ID_BITS       = 1,
+    parameter int KEEP_BITS     = 0,
+    parameter int REV_USER_BITS = 1
+  );
+    localparam int KEEP_W     = (KEEP_BITS > 0) ? KEEP_BITS : div_ceil(DATA_BITS, 8);
+    localparam int REV_USER_W = downto_width(REV_USER_BITS);
+    localparam int TOTAL_SER_W = DATA_BITS + 1 + USER_BITS + DEST_BITS + ID_BITS + KEEP_W;
+
+    typedef axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS, REV_USER_BITS)::m2s_t m2s_t;
+    typedef axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS, REV_USER_BITS)::s2m_t s2m_t;
 
     typedef m2s_t m2s_vector_t[];
     typedef s2m_t s2m_vector_t[];
@@ -99,8 +115,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_LastFromSerialized: size mismatch");
+`endif
+      end
       return serialized[DATA_BITS + KEEP_W];
     endfunction
 
@@ -108,8 +127,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_DataFromSerialized: size mismatch");
+`endif
+      end
       return serialized[DATA_BITS-1:0];
     endfunction
 
@@ -117,8 +139,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_KeepFromSerialized: size mismatch");
+`endif
+      end
       return serialized[DATA_BITS+KEEP_W-1:DATA_BITS];
     endfunction
 
@@ -126,8 +151,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_UserFromSerialized: size mismatch");
+`endif
+      end
       return serialized[DATA_BITS+KEEP_W+USER_BITS:DATA_BITS+KEEP_W+1];
     endfunction
 
@@ -135,8 +163,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_DestFromSerialized: size mismatch");
+`endif
+      end
       return serialized[DATA_BITS+KEEP_W+1+USER_BITS+DEST_BITS-1:DATA_BITS+KEEP_W+1+USER_BITS];
     endfunction
 
@@ -144,8 +175,11 @@ package poc_axi4stream;
       input logic [TOTAL_SER_W-1:0] serialized,
       input m2s_t                 in_m2s
     );
-      if (TOTAL_SER_W != get_total_data_bits(in_m2s))
+      if (TOTAL_SER_W != get_total_data_bits(in_m2s)) begin
+`ifndef SYNTHESIS
         $fatal(1, "axi4stream.get_IDFromSerialized: size mismatch");
+`endif
+      end
       return serialized[TOTAL_SER_W-1:DATA_BITS+KEEP_W+1+USER_BITS+DEST_BITS];
     endfunction
   endclass

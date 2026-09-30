@@ -32,7 +32,8 @@ package poc_axi4_full;
     endfunction
   endclass
 
-  class axi4_full_sized #(
+  // Package-scope type bundle (structs only) for synthesizable port types.
+  class axi4_full_types #(
     parameter int ADDRESS_BITS = 32,
     parameter int DATA_BITS    = 32,
     parameter int USER_BITS    = 1,
@@ -96,6 +97,21 @@ package poc_axi4_full;
       bus_m2s_t M2S;
       bus_s2m_t S2M;
     } bus_t;
+  endclass
+
+  class axi4_full_sized #(
+    parameter int ADDRESS_BITS = 32,
+    parameter int DATA_BITS    = 32,
+    parameter int USER_BITS    = 1,
+    parameter int ID_BITS      = 1
+  );
+    localparam int WSTRB_W = div_ceil(DATA_BITS, 8);
+    localparam int ID_W    = downto_width(ID_BITS);
+    localparam int USER_W  = downto_width(USER_BITS);
+
+    typedef axi4_full_types#(ADDRESS_BITS, DATA_BITS, USER_BITS, ID_BITS)::bus_s2m_t bus_s2m_t;
+    typedef axi4_full_types#(ADDRESS_BITS, DATA_BITS, USER_BITS, ID_BITS)::bus_m2s_t bus_m2s_t;
+    typedef axi4_full_types#(ADDRESS_BITS, DATA_BITS, USER_BITS, ID_BITS)::bus_t     bus_t;
 
     typedef bus_s2m_t bus_s2m_vector_t[];
     typedef bus_m2s_t bus_m2s_vector_t[];

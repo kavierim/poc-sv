@@ -26,7 +26,14 @@ module ocram_SinglePort #(
   logic [DATA_BITS-1:0] ram[0:WORDS-1];
   logic [ADDRESS_BITS-1:0] a_reg;
 
-  initial poc_mem::ram_init#(WORDS, DATA_BITS)::init_words(ram, FILENAME);
+  initial begin
+`ifdef SYNTHESIS
+    for (int i = 0; i < WORDS; i++)
+      ram[i] = '0;
+`else
+    poc_mem::ram_init#(WORDS, DATA_BITS)::init_words(ram, FILENAME);
+`endif
+  end
 
   always_ff @(posedge Clock) begin
     if (ClockEnable) begin

@@ -25,10 +25,10 @@ package poc_axi4;
   );
     localparam int FULL_WSTRB = div_ceil(DATA_W, 8);
 
-    typedef axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t full_m2s_t;
-    typedef axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t full_s2m_t;
-    typedef axi4lite_sized#(ADDR_W, DATA_W)::bus_m2s_t               lite_m2s_t;
-    typedef axi4lite_sized#(ADDR_W, DATA_W)::bus_s2m_t               lite_s2m_t;
+    typedef axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t full_m2s_t;
+    typedef axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t full_s2m_t;
+    typedef axi4lite_types#(ADDR_W, DATA_W)::bus_m2s_t               lite_m2s_t;
+    typedef axi4lite_types#(ADDR_W, DATA_W)::bus_s2m_t               lite_s2m_t;
 
     static function automatic logic [DATA_W-1:0] resize_data(
       input logic [DATA_W-1:0] v,

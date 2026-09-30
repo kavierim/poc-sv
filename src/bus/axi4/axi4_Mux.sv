@@ -21,8 +21,8 @@ module axi4_Mux #(
   parameter int NUM_OUTSTANDING_READS  = 0,
   parameter int NUM_OUTSTANDING_WRITES = 0,
   parameter int PIPELINE_IN[PORTS] = '{default: 0},
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   input  logic Clock,
   input  logic Reset,
@@ -62,8 +62,9 @@ module axi4_Mux #(
   // Input FIFO glue: unpacked PIPELINE_IN[gi] is not a generate constant in Verilator 5.
   // PIPELINE_IN_MASK: bit i set when PIPELINE_IN[i] > 0 (matches VHDL glue_in_gen).
   // S2M bypass is only the else branch, so a live input FIFO is the sole driver of In_S2M.
-  function static int pipeline_in_mask();
-    int m = 0;
+  function automatic int pipeline_in_mask();
+    int m;
+    m = 0;
     for (int i = 0; i < PORTS; i++)
       if (PIPELINE_IN[i] > 0)
         m |= (1 << i);
@@ -137,6 +138,38 @@ module axi4_Mux #(
 
   logic RequestWithSelf;
   logic RequestWithoutSelf;
+
+  // --- Read merge (AXI-Stream shim); declare before always_comb (slang) ---
+  localparam int FWD_W = ADDR_W + 8 + 3 + 2 + OUT_AR_ID_BITS + USER_W + 4 + 3 + 1 + 4 + 4;
+
+  typedef axi4stream_types#(FWD_W, 1, 1, 1, 1)::m2s_t fwd_m2s_t;
+  typedef axi4stream_types#(FWD_W, 1, 1, 1, 1)::s2m_t fwd_s2m_t;
+
+  fwd_m2s_t Mux_In_M2S[PORTS];
+  fwd_s2m_t Mux_In_S2M[PORTS];
+  fwd_m2s_t Mux_Out_M2S;
+  fwd_s2m_t Mux_Out_S2M;
+
+  localparam int RD_NUM_IDX = (NUM_OUTSTANDING_READS == 0) ? (1 << OUT_AR_ID_BITS) : NUM_OUTSTANDING_READS;
+
+  logic RdPut;
+  logic RdFull;
+  logic [PORT_BITS + IN_AR_ID_BITS-1:0] RdDataIn;
+  logic [downto_width(log2ceilnz(RD_NUM_IDX))-1:0] RdIndexOut;
+  logic RdGot;
+  logic RdValid;
+  logic [PORT_BITS + IN_AR_ID_BITS-1:0] RdDataOut;
+
+  localparam int FWD_AR_LEN_LO   = ADDR_W;
+  localparam int FWD_AR_SIZE_LO  = ADDR_W + 8;
+  localparam int FWD_AR_BURST_LO = ADDR_W + 8 + 3;
+  localparam int FWD_AR_ID_LO    = ADDR_W + 8 + 3 + 2;
+  localparam int FWD_AR_USER_LO  = FWD_AR_ID_LO + OUT_AR_ID_BITS;
+  localparam int FWD_AR_CACHE_LO = FWD_AR_USER_LO + USER_W;
+  localparam int FWD_AR_PROT_LO  = FWD_AR_CACHE_LO + 4;
+  localparam int FWD_AR_LOCK_LO  = FWD_AR_PROT_LO + 3;
+  localparam int FWD_AR_QOS_LO   = FWD_AR_LOCK_LO + 1;
+  localparam int FWD_AR_REGION_LO = FWD_AR_QOS_LO + 4;
 
   /* verilator lint_off ALWCOMBORDER */
   always_comb begin
@@ -327,52 +360,6 @@ module axi4_Mux #(
     .Arbitrate(Arbitrate), .RequestVector(RequestVector),
     .Arbitrated(Arbitrated), .GrantVector(GrantVector), .GrantIndex(GrantIndex)
   );
-
-  // --- Read merge (AXI-Stream shim) ---
-  localparam int FWD_W = ADDR_W + 8 + 3 + 2 + OUT_AR_ID_BITS + USER_W + 4 + 3 + 1 + 4 + 4;
-
-  typedef axi4stream_sized#(FWD_W, 1, 1, 1, 1)::m2s_t fwd_m2s_t;
-  typedef axi4stream_sized#(FWD_W, 1, 1, 1, 1)::s2m_t fwd_s2m_t;
-
-  fwd_m2s_t Mux_In_M2S[PORTS];
-  fwd_s2m_t Mux_In_S2M[PORTS];
-  fwd_m2s_t Mux_Out_M2S;
-  fwd_s2m_t Mux_Out_S2M;
-
-  localparam int RD_NUM_IDX = (NUM_OUTSTANDING_READS == 0) ? (1 << OUT_AR_ID_BITS) : NUM_OUTSTANDING_READS;
-
-  logic RdPut;
-  logic RdFull;
-  logic [PORT_BITS + IN_AR_ID_BITS-1:0] RdDataIn;
-  logic [downto_width(log2ceilnz(RD_NUM_IDX))-1:0] RdIndexOut;
-  logic RdGot;
-  logic RdValid;
-  logic [PORT_BITS + IN_AR_ID_BITS-1:0] RdDataOut;
-
-  localparam int AR_ADDR_POS = 0;
-  localparam int AR_LEN_POS  = 1;
-  localparam int AR_SIZE_POS = 2;
-  localparam int AR_BURST_POS = 3;
-  localparam int AR_ID_POS = 4;
-  localparam int AR_USER_POS = 5;
-  localparam int AR_CACHE_POS = 6;
-  localparam int AR_PROT_POS = 7;
-  localparam int AR_LOCK_POS = 8;
-  localparam int AR_QOS_POS = 9;
-  localparam int AR_REGION_POS = 10;
-  localparam int FWD_LENS[11] = '{
-    ADDR_W, 8, 3, 2, OUT_AR_ID_BITS, USER_W, 4, 3, 1, 4, 4
-  };
-  localparam int FWD_AR_LEN_LO   = ADDR_W;
-  localparam int FWD_AR_SIZE_LO  = ADDR_W + 8;
-  localparam int FWD_AR_BURST_LO = ADDR_W + 8 + 3;
-  localparam int FWD_AR_ID_LO    = ADDR_W + 8 + 3 + 2;
-  localparam int FWD_AR_USER_LO  = FWD_AR_ID_LO + OUT_AR_ID_BITS;
-  localparam int FWD_AR_CACHE_LO = FWD_AR_USER_LO + USER_W;
-  localparam int FWD_AR_PROT_LO  = FWD_AR_CACHE_LO + 4;
-  localparam int FWD_AR_LOCK_LO  = FWD_AR_PROT_LO + 3;
-  localparam int FWD_AR_QOS_LO   = FWD_AR_LOCK_LO + 1;
-  localparam int FWD_AR_REGION_LO = FWD_AR_QOS_LO + 4;
 
   for (genvar ri = 0; ri < PORTS; ri++) begin : rd_map
     logic [FWD_W-1:0] ForwardDataIn;

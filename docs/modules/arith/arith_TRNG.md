@@ -54,3 +54,4 @@ Testbench matrix: [`verification.md`](../../playbooks/verification.md). From the
 
 - Domain: [index.md](index.md)
 - RTL: `src/arith/arith_TRNG.sv`
+- ASIC synth: intentional `SKIP` in [`asic-synth.md`](../../playbooks/asic-synth.md) (combinational-loop entropy source; no synthesizable parent instantiates it).

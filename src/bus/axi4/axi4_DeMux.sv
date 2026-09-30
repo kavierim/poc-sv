@@ -23,8 +23,8 @@ module axi4_DeMux #(
   parameter logic [ADDR_W-1:0] BASE_ADDRESS[PORTS] = '{default: '0},
   parameter logic [ADDR_W-1:0] BASE_ADDRESS_MASK[PORTS] = '{default: '0},
   parameter int PIPELINE_OUT[PORTS] = '{default: 0},
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   input  logic Clock,
   input  logic Reset,
@@ -145,8 +145,8 @@ module axi4_DeMux #(
   logic [IN_AW_ID_BITS-1:0] DataOut_wr[PORTS];
 
   localparam int B_MUX_W = RESPONSE_BITS + OUT_AW_ID_BITS + USER_W;
-  typedef axi4stream_sized#(B_MUX_W, 1, 1, 1, 1)::m2s_t b_mux_m2s_t;
-  typedef axi4stream_sized#(B_MUX_W, 1, 1, 1, 1)::s2m_t b_mux_s2m_t;
+  typedef axi4stream_types#(B_MUX_W, 1, 1, 1, 1)::m2s_t b_mux_m2s_t;
+  typedef axi4stream_types#(B_MUX_W, 1, 1, 1, 1)::s2m_t b_mux_s2m_t;
 
   b_mux_m2s_t WMux_In[PORTS+1];
   b_mux_s2m_t WMux_In_S2M[PORTS+1];
@@ -323,10 +323,10 @@ module axi4_DeMux #(
   localparam int FWD_W = ADDR_W + 8 + 3 + 2 + ID_BITS + USER_W + 4 + 3 + 1 + 4 + 4;
   localparam int R_MUX_W = DATA_W + RESPONSE_BITS + ID_BITS + USER_W;
 
-  typedef axi4stream_sized#(FWD_W, 1, 1, 1, 1)::m2s_t fwd_m2s_t;
-  typedef axi4stream_sized#(FWD_W, 1, 1, 1, 1)::s2m_t fwd_s2m_t;
-  typedef axi4stream_sized#(R_MUX_W, 1, 1, 1, 1)::m2s_t r_mux_m2s_t;
-  typedef axi4stream_sized#(R_MUX_W, 1, 1, 1, 1)::s2m_t r_mux_s2m_t;
+  typedef axi4stream_types#(FWD_W, 1, 1, 1, 1)::m2s_t fwd_m2s_t;
+  typedef axi4stream_types#(FWD_W, 1, 1, 1, 1)::s2m_t fwd_s2m_t;
+  typedef axi4stream_types#(R_MUX_W, 1, 1, 1, 1)::m2s_t r_mux_m2s_t;
+  typedef axi4stream_types#(R_MUX_W, 1, 1, 1, 1)::s2m_t r_mux_s2m_t;
 
   fwd_m2s_t DeMux_In_M2S;
   fwd_s2m_t DeMux_In_S2M;
@@ -407,23 +407,34 @@ module axi4_DeMux #(
     );
   end
 
-  axi4stream_DeMux #(
-    .PORTS(PORTS), .DATA_BITS(FWD_W), .USER_BITS(1), .DEST_BITS(1), .ID_BITS(1), .KEEP_BITS(1)
-  ) Read_DeMux (
-    .Clock(Clock), .Reset(Reset),
-    .DeMuxControl(DeMuxControl_rd),
-    .In_M2S(DeMux_In_M2S), .In_S2M(DeMux_In_S2M),
-    .Out_M2S(DeMux_Out_M2S), .Out_S2M(DeMux_Out_S2M)
-  );
+  // Single-beat AR forward (Last always 1). Inline demux avoids a second
+  // axi4stream_* instance alongside Write_Mux (Yosys/slang rtlil assert).
+  always_comb begin
+    DeMux_In_S2M = '0;
+    for (int i = 0; i < PORTS; i++) begin
+      DeMux_Out_M2S[i] = '0;
+      if (DeMuxControl_rd[i]) begin
+        DeMux_Out_M2S[i]       = DeMux_In_M2S;
+        DeMux_In_S2M.Ready     = DeMux_In_S2M.Ready | DeMux_Out_S2M[i].Ready;
+      end
+    end
+    if (~|DeMuxControl_rd)
+      DeMux_In_S2M.Ready = 1'b1;
+  end
 
-  axi4stream_Mux #(
-    .PORTS(PORTS + 1), .DATA_BITS(R_MUX_W), .USER_BITS(1), .DEST_BITS(1), .ID_BITS(1), .KEEP_BITS(1)
-  ) Read_mux (
-    .Clock(Clock), .Reset(Reset),
-    .MuxControl('1),
-    .In_M2S(RMux_In), .In_S2M(RMux_In_S2M),
-    .Out_M2S(RMux_Out), .Out_S2M(RMux_Out_S2M)
-  );
+  // Priority R-response merge (PORTS + DECERR). Same Yosys constraint as above.
+  always_comb begin
+    RMux_Out = '0;
+    for (int i = 0; i < PORTS + 1; i++)
+      RMux_In_S2M[i] = '0;
+    for (int i = 0; i < PORTS + 1; i++) begin
+      if (RMux_In[i].Valid) begin
+        RMux_Out            = RMux_In[i];
+        RMux_In_S2M[i].Ready = RMux_Out_S2M.Ready;
+        break;
+      end
+    end
+  end
   assign RMux_Out_S2M.Ready = In_M2S_read.RReady;
 
   fifo_Shift #(

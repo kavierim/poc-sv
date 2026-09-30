@@ -41,7 +41,14 @@ module ocram_TrueDualPort_Simulation #(
   logic [ADDRESS_BITS-1:0] port_b_write_addr;
   logic                    port_b_wrote;
 
-  initial poc_mem::ram_init#(WORDS, DATA_BITS)::init_words(ram, FILENAME);
+  initial begin
+`ifdef SYNTHESIS
+    for (int i = 0; i < WORDS; i++)
+      ram[i] = '0;
+`else
+    poc_mem::ram_init#(WORDS, DATA_BITS)::init_words(ram, FILENAME);
+`endif
+  end
 
   always_ff @(posedge PortA_Clock) begin
     port_a_wrote <= 1'b0;

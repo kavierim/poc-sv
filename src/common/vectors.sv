@@ -12,8 +12,10 @@
 package poc_vectors;
 
   import poc_config::C_POC_NUL;
+`ifndef SYNTHESIS
   import poc_strings::slv_to_str;
   import poc_strings::str_trim;
+`endif
   import poc_strings::to_char_sl;
   import poc_utils::div_ceil;
 
@@ -99,13 +101,14 @@ package poc_vectors;
     endfunction
   endclass
 
+`ifndef SYNTHESIS
   class slvv_fmt #(parameter int W = 8, parameter int N = 1);
     static function automatic string to_string(input logic [W-1:0] lanes[N], input byte sep = ":");
       string result;
       result = "";
       for (int i = 0; i < N; i++) begin
         if (i > 0 && sep != C_POC_NUL)
-          result = {result, sep};
+          result = {result, string'(sep)};
         result = {result, slv_to_str#(W)::to_string(lanes[i], "h")};
       end
       return result;
@@ -124,7 +127,7 @@ package poc_vectors;
       result = "\n";
       for (int i = 0; i < ROWS; i++) begin
         for (int j = 0; j < COLS; j++) begin
-          result = {result, to_char_sl(m[i][j])};
+          result = {result, string'(to_char_sl(m[i][j]))};
           if (((j + 1) % groups) == 0)
             result = {result, " "};
         end
@@ -133,5 +136,6 @@ package poc_vectors;
       return str_trim(result);
     endfunction
   endclass
+`endif
 
 endpackage

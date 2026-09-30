@@ -50,8 +50,11 @@ module ocram_TrueDualPort_WriteFirst #(
       end
     endcase
 
-    if (fwd1_r && fwd2_r)
+    if (fwd1_r && fwd2_r) begin
+`ifndef SYNTHESIS
       $error("ocram_TrueDualPort_WriteFirst: both ports write to the same address.");
+`endif
+    end
   end
 
   ocram_TrueDualPort #(

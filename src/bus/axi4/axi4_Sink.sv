@@ -16,8 +16,8 @@ module axi4_Sink #(
   parameter int DATA_W = 32,
   parameter int USER_W = 1,
   parameter int ID_W   = 1,
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   input  logic Clock,
   input  logic Reset,

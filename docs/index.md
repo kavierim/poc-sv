@@ -4,8 +4,9 @@ Unofficial SystemVerilog port of [VHDL/PoC](https://github.com/VHDL/PoC) **v3.0.
 
 1. [Getting started](playbooks/getting-started.md) — install Verilator and run the suite
 2. [Verification](playbooks/verification.md) — what the 28 testbenches cover
-3. [SysML](playbooks/sysml.md) / [behavioral models](playbooks/model.md) — structural model and Python `model/`
-4. [Modules](modules/index.md) — Purpose, Behaviour, and `REQ-*` per entity
+3. [ASIC synth](playbooks/asic-synth.md) — Yosys `read_slang` + generic `synth` smoke
+4. [SysML](playbooks/sysml.md) / [behavioral models](playbooks/model.md) — structural model and Python `model/`
+5. [Modules](modules/index.md) — Purpose, Behaviour, and `REQ-*` per entity
 
 ## Modules by domain
 

@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 Kari Vierimaa, Kempele, Finland
+#
+# Ancillary repository file (not Covered Source). RTL is under Apache-2.0; see NOTICE.
+
+name: asic-synth
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  synth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install oss-cad-suite
+        run: |
+          set -euo pipefail
+          # Release tag 2026-09-30, asset stamp 20260930 (confirmed on YosysHQ/oss-cad-suite-build).
+          URL="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-09-30/oss-cad-suite-linux-x64-20260930.tgz"
+          curl -L --fail -o /tmp/oss-cad-suite.tgz "$URL"
+          mkdir -p "$HOME/oss-cad-suite"
+          tar -xzf /tmp/oss-cad-suite.tgz -C "$HOME/oss-cad-suite" --strip-components=1
+
+      - name: ASIC synth smoke
+        run: |
+          set -euo pipefail
+          # shellcheck source=/dev/null
+          source "$HOME/oss-cad-suite/environment"
+          python3 tools/synth_asic.py | tee asic-synth.log
+
+      - name: Upload synth log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: asic-synth-log
+          path: asic-synth.log
+          if-no-files-found: warn

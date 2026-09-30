@@ -139,10 +139,12 @@ module axi4lite_Register #(
   logic [15:0] Is_Interrupt_re;
 
   initial begin
+`ifndef SYNTHESIS
     if (DATA_W != 32)
       $fatal(1, "PoC.axi4lite_Register: only 32-bit DATA_W supported in this port");
     if (ADDR_W < REG_ADDRESS_BITS)
       $fatal(1, "PoC.axi4lite_Register: AXI address width too small for register map");
+`endif
   end
 
   function automatic void init_register_file();

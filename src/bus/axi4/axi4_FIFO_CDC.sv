@@ -21,8 +21,8 @@ module axi4_FIFO_CDC #(
   // VHDL: positive := 2. Keep positive default so fifo_ic_got MIN_DEPTH is valid.
   parameter int FRAMES = 2,
   parameter int FRAME_DEPTH = 1,
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   input  logic In_Clock,
   input  logic In_Reset,

@@ -17,8 +17,8 @@ module axi4_Termination_Subordinate #(
   parameter int USER_W = 1,
   parameter int ID_W   = 1,
   parameter poc_axi4_common::T_AXI4_Response RESPONSE_CODE = poc_axi4_common::C_AXI4_RESPONSE_SLAVE_ERROR,
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   input  logic Clock,
   input  logic Reset,

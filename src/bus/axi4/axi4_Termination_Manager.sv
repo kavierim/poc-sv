@@ -17,8 +17,8 @@ module axi4_Termination_Manager #(
   parameter int USER_W = 1,
   parameter int ID_W   = 1,
   parameter bit VALUE  = 1'b0,
-  parameter type m2s_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
-  parameter type s2m_t = axi4_full_sized#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
+  parameter type m2s_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_m2s_t,
+  parameter type s2m_t = axi4_full_types#(ADDR_W, DATA_W, USER_W, ID_W)::bus_s2m_t
 ) (
   output m2s_t AXI4_M2S,
   input  s2m_t AXI4_S2M /* unused */

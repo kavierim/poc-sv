@@ -76,7 +76,9 @@ module bus_Arbiter #(
       assign GrantIndex  = poc_utils::bits#(PORTS)::onehot2bin(ChannelPointer_nxt);
     end
   end else begin : gen_unsupported
+`ifndef SYNTHESIS
     initial $fatal(1, "PoC.bus_Arbiter: strategy '%s' not implemented", STRATEGY);
+`endif
   end
 
 endmodule

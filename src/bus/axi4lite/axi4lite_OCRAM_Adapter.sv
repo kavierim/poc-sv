@@ -63,10 +63,12 @@ module axi4lite_OCRAM_Adapter #(
   t_state nextState;
 
   initial begin
+`ifndef SYNTHESIS
     if ((ADDR_W - ADDR_LSB) < OCRAM_ADDRESS_BITS)
       $fatal(1, "PoC.axi4lite_OCRAM_Adapter: not enough AXI address bits for OCRAM");
     if (DATA_W < OCRAM_DATA_BITS)
       $fatal(1, "PoC.axi4lite_OCRAM_Adapter: not enough AXI data bits for OCRAM");
+`endif
   end
 
   generate

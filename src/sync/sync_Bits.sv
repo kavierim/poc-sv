@@ -25,8 +25,10 @@ module sync_Bits #(
 );
 
   if ((SYNC_DEPTH < poc_sync::SYNC_DEPTH_MIN) || (SYNC_DEPTH > poc_sync::SYNC_DEPTH_MAX)) begin : gen_depth_check
+`ifndef SYNTHESIS
     initial $error("sync_Bits: SYNC_DEPTH must be %0d..%0d", poc_sync::SYNC_DEPTH_MIN,
                    poc_sync::SYNC_DEPTH_MAX);
+`endif
   end
 
   localparam logic [255:0] INIT_I_WIDE = poc_sync::init_resized(INIT, BITS);

@@ -68,7 +68,13 @@ module fifo_ic_got #(
       wr_cnt <= wr_cnt + 1;
   end
 
-  assign IP1 = {wr_cnt[ADDRESS_BITS], wr_cnt[ADDRESS_BITS-1:0] ^ {1'b0, wr_cnt[ADDRESS_BITS-1:1]}};
+  // Binary-to-gray on the address field; ADDRESS_BITS==1 has no [N-1:1] slice.
+  if (ADDRESS_BITS > 1) begin : wr_gray
+    assign IP1 = {wr_cnt[ADDRESS_BITS],
+                  wr_cnt[ADDRESS_BITS-1:0] ^ {1'b0, wr_cnt[ADDRESS_BITS-1:1]}};
+  end else begin : wr_gray_narrow
+    assign IP1 = {wr_cnt[ADDRESS_BITS], wr_cnt[ADDRESS_BITS-1:0]};
+  end
 
   always_ff @(posedge Write_Clock) begin
     if (Write_Reset) begin
@@ -114,7 +120,12 @@ module fifo_ic_got #(
       rd_cnt <= rd_cnt + 1;
   end
 
-  assign OP1 = {rd_cnt[ADDRESS_BITS], rd_cnt[ADDRESS_BITS-1:0] ^ {1'b0, rd_cnt[ADDRESS_BITS-1:1]}};
+  if (ADDRESS_BITS > 1) begin : rd_gray
+    assign OP1 = {rd_cnt[ADDRESS_BITS],
+                  rd_cnt[ADDRESS_BITS-1:0] ^ {1'b0, rd_cnt[ADDRESS_BITS-1:1]}};
+  end else begin : rd_gray_narrow
+    assign OP1 = {rd_cnt[ADDRESS_BITS], rd_cnt[ADDRESS_BITS-1:0]};
+  end
 
   always_ff @(posedge Read_Clock) begin
     if (Read_Reset) begin
