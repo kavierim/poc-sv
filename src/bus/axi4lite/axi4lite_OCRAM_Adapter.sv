@@ -31,7 +31,7 @@ module axi4lite_OCRAM_Adapter #(
   import poc_axi4_common::*;
   import poc_axi4lite::*;
   import poc_utils::*;
-  import poc_axi4_full::vec_resize;
+  import poc_axi4_full::*;
 
   localparam int ADDR_LSB = log2ceil(DATA_W) - 3;
   localparam int OCRAM_BYTE_ENABLE_W = OCRAM_DATA_BITS / 8;

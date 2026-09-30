@@ -20,7 +20,8 @@ package poc_axi4_full;
     AddressTranslateCmd_Hold
   } T_Address_Translate_Command;
 
-  class vec_resize #(parameter int SRC_W, parameter int DST_W);
+  // Defaults let Verilator import the class name; call sites still specialize SRC_W/DST_W.
+  class vec_resize #(parameter int SRC_W = 1, parameter int DST_W = 1);
     static function automatic logic [DST_W-1:0] resize(input logic [SRC_W-1:0] v);
       logic [DST_W-1:0] res;
       int               cp;

@@ -98,6 +98,7 @@ run_one() {
     verilator --timing --binary --assert
     -Wno-DECLFILENAME -Wno-MULTITOP -Wno-UNOPTFLAT
     -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-PINMISSING -Wno-ASCRANGE
+    -Wno-ZERODLY
     -j 1
     --Mdir "obj_dir/${top}"
     --top "$top"

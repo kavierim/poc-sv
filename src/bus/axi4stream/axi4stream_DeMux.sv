@@ -63,7 +63,8 @@ module axi4stream_DeMux #(
   logic [PORTS-1:0] ChannelPointer_d = '0;
 
   logic [PORTS-1:0] Out_Ready;
-  logic [PORTS-1:0] Valid_Mask_r = '1;
+  // No variable initializer: gen_no_mirror drives with a continuous assign (CONTASSINIT).
+  logic [PORTS-1:0] Valid_Mask_r;
 
   axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::m2s_t Out_M2S_d[PORTS];
   axi4stream_types#(DATA_BITS, USER_BITS, DEST_BITS, ID_BITS, KEEP_BITS)::s2m_t Out_S2M_d[PORTS];

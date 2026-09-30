@@ -364,7 +364,8 @@ module axi4_Mux #(
   for (genvar ri = 0; ri < PORTS; ri++) begin : rd_map
     logic [FWD_W-1:0] ForwardDataIn;
     always_comb begin
-      int p = 0;
+      automatic int p;
+      p = 0;
       ForwardDataIn[p+:ADDR_W] = In_M2S_read[ri].ARAddr; p += ADDR_W;
       ForwardDataIn[p+:8] = In_M2S_read[ri].ARLen; p += 8;
       ForwardDataIn[p+:3] = In_M2S_read[ri].ARSize; p += 3;

@@ -34,8 +34,6 @@ module axi4_AXI4Lite_Converter #(
   output lite_m2s_t Out_M2S,
   input  lite_s2m_t Out_S2M
 );
-  import poc_axi4_full::vec_resize;
-
   localparam int ID_BITS = poc_utils::downto_width(ID_W);
 
   logic Response_B_fifo_ful;
