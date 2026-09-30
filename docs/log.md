@@ -4,6 +4,7 @@ Internal chronology for maintainers. New readers should use the [README](../READ
 
 ## 2026-09-30
 
+- README: add GitHub Actions status badges for Verilator and ASIC synth (`kavierim/poc-sv`).
 - README: document both GitHub CI workflows (Verilator + ASIC synth smoke), `arith_TRNG` SKIP exception, and that the smoke is not Liberty/SRAM signoff (memories may become flops).
 - ASIC synth smoke: `tools/synth_asic.py` (Yosys `read_slang` + generic `synth -top`), CI `.github/workflows/asic-synth.yml` (oss-cad-suite `20260930` linux-x64). Playbook [`asic-synth.md`](playbooks/asic-synth.md). AXI bus typedefs hoisted to package-scope `*_types` classes; `poc_utils`/`poc_strings`/`ocram` sim-only paths guarded with `` `ifndef SYNTHESIS ``. `axi4_DeMux` read path inlined (second `axi4stream_Mux` tripped a Yosys/slang assert). `arith_TRNG` documented SKIP (comb-loop TRNG). Synth **65 pass / 0 fail / 1 skip**; Verilator **28/28**.
 - SysML library index [`sysml/PoC.sysml`](../sysml/PoC.sysml); playbooks [sysml](playbooks/sysml.md), [model](playbooks/model.md), [stream-interfaces](playbooks/stream-interfaces.md). `model:` URI on all module pages; `# Model` on `axi4stream_FIFO` / `axi4stream_Mux`. Behavioral models under `model/`; checker `tools/check_sysml_ssot.py`. `AGENTS.md` / README updated for SysML and models.

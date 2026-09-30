@@ -6,6 +6,9 @@ Ancillary repository file (not Covered Source). RTL is under Apache-2.0; see NOT
 
 # PoC SystemVerilog (PoC_sv)
 
+[![Verilator](https://github.com/kavierim/poc-sv/actions/workflows/verilator.yml/badge.svg)](https://github.com/kavierim/poc-sv/actions/workflows/verilator.yml)
+[![ASIC synth](https://github.com/kavierim/poc-sv/actions/workflows/asic-synth.yml/badge.svg)](https://github.com/kavierim/poc-sv/actions/workflows/asic-synth.yml)
+
 Unofficial [SystemVerilog](https://en.wikipedia.org/wiki/SystemVerilog) port of the VHDL **[PoC-Library](https://github.com/VHDL/PoC)** (“Pile of Cores”) — reusable interconnect, FIFO, memory, sync, and arithmetic blocks — simulated with **[Verilator](https://www.veripool.org/verilator/) 5**.
 
 Pinned to upstream tag [**v3.0.0**](https://github.com/VHDL/PoC/releases/tag/v3.0.0) (commit [`b9040273`](https://github.com/VHDL/PoC/commit/b9040273)). Not endorsed by OSVG or the upstream PoC maintainers.
